@@ -154,4 +154,7 @@ inline void staticError(ProgramError& err) {
 inline void dynamicError(EvalError& err) {
 	std::cerr << err.what() << "\n";
 }
+
+#define CHECK(x) std::cout << #x << ": " << x << std::endl
+
 #endif //LISP_DEBUG_H

@@ -79,8 +79,10 @@ class Atom {
 	explicit Atom(double rational):
 		value(rational), type(Type::Rational) {}
 	// construct a Nil atom
-	explicit Atom(Type _type = Type::Nil):
-		value(0), type(_type) {}
+//	explicit Atom(Type _type = Type::Nil):
+//		value(0), type(_type) {}
+    explicit Atom():
+        value(0), type(Type::Nil) {}
 	// construct a Closure atom
     Atom(Environment& env, Atom& params, Atom& body);
 };

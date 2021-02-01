@@ -50,7 +50,8 @@ Atom lambda(Environment& env, const Atom& args, Atom& expr){
 Atom applyClosure(Atom& fn, Atom args){
 
     auto closure_env = Environment(fn.car());
-	std::cout << "Before:" << closure_env.atom() << std::endl;
+    std::cout << "Before:" << "\n";
+    std::cout << closure_env.atom() << std::endl;
     Atom param_names = fn.cdr().car();
     Atom body = fn.cdr().cdr();
 
@@ -60,7 +61,8 @@ Atom applyClosure(Atom& fn, Atom args){
         param_names = param_names.cdr();
         args = args.cdr();
     }
-    std::cout << "After:" << closure_env.atom() << std::endl;
+    std::cout << "After:" << "\n";
+	std::cout << closure_env.atom() << std::endl;
     if(!param_names.isNil() || !args.isNil()){
         // arguments & parameters are not the same amount!
     }
@@ -75,7 +77,6 @@ Atom applyClosure(Atom& fn, Atom args){
 }
 
 Atom apply(Atom& fn, const Atom& args){
-
 	if(fn.type == Type::Builtin){
 		return (*fn.builtin())(args);
 	} else if(fn.type == Type::Closure){
@@ -128,6 +129,8 @@ Atom eval(Atom expr, Environment& env){
         p.car() = eval(p.car(), env);
 		p = p.cdr();
 	}
+//    std::cout << "operator:" << op.car() << std::endl;
+//    std::cout << "environment:" << env.atom() << std::endl;
 	return apply(op, args);
 }
 

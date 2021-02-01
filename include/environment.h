@@ -12,15 +12,20 @@
  */
 class Environment {
 
-	Atom env;
+	Atom m_env;
+    explicit Environment(const Atom& parent, bool b) :
+        m_env(parent){}
   public:
-	Environment(const Atom& parent, const std::vector<std::pair<std::string, Atom::builtin_t>>& pair): env(Atom(parent, nil)){
+	Environment(const Atom& parent, const std::vector<std::pair<std::string, Atom::builtin_t>>& pair):
+		m_env(Atom(parent, nil)){
 		for(auto& s : pair){
 			set(Atom(s.first), Atom(s.second));
 		}
 	}
-	explicit Environment(const Atom& parent) : env(Atom(parent, nil)){}
-	Atom& atom(){ return env; }
+	explicit Environment(const Atom& parent) :
+		m_env(Atom(parent, nil)){}
+
+	Atom& atom(){ return m_env; }
 
 	/**
 	 * Uses the atom structure as a map
@@ -28,9 +33,12 @@ class Environment {
 	 * @return
 	 */
 	Atom get(const Atom& symbol) {
-        std::cout << env << std::endl;
-		Atom parent = env.car();
-        Atom bs = env.cdr();
+
+		Atom parent = m_env.car();
+        Atom bs = m_env.cdr();
+        CHECK(parent);
+        CHECK(bs);
+
 		// go through the Atom structure
 		while(!bs.isNil()){
             Atom b = bs.car();
@@ -38,29 +46,34 @@ class Environment {
 			if(*b.car().symbol() == *symbol.symbol()){
 				return b.cdr();
 			}
-			bs = bs.cdr();
+            bs = bs.cdr();
 		}
 		if(parent.isNil()){
 			throw EnvError(*this, parent, format("Unexpected identifier {}, have you defined {}?", *symbol.symbol(), *symbol.symbol()) );
 		}
-		env = parent;
-		return get(symbol);
+//		m_env = parent;
+        auto parent_env = Environment(parent, true);
+		return parent_env.get(symbol);
 	}
 
     void set(const Atom& symbol, const Atom& value) {
-
-		Atom bs = env.cdr();
+		Atom bs = m_env.cdr();
 		Atom b = nil;
-
+        std::cout << "before: " << m_env << std::endl;
+		// try to find symbol
 		while(!bs.isNil()){
 			b = bs.car();
 			if(b.car().symbol() == symbol.symbol()){
 				b.cdr() = value;
+				return;
 			}
 			bs = bs.cdr();
 		}
+		// if it does not exist, prepend symbol value set
 		b = Atom(symbol, value);
-		env.cdr() = Atom(b, env.cdr()); // prepend symbol value set
+		m_env.cdr() = Atom(b, m_env.cdr());
+
+        std::cout << "after: " << m_env << std::endl;
     }
 };
 

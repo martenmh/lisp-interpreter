@@ -50,7 +50,6 @@ int main(int argv, char** argc) {
 						  {"-",    builtin::sub},
 						  {"*",    builtin::mul},
 						  {"/",    builtin::div}});
-    env.set(Atom("x"), Atom(long(4)));
 	if(argv == 1){
 
 	} else {
