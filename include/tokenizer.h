@@ -6,12 +6,12 @@
 #include "token.h"
 
 #include <iostream>
-#include <queue>
+#include <deque>
 #include <set>
 #include <utility>
 
-std::queue<Token> tokenizer(const std::string& input) {
-	std::queue<Token> tokens;
+std::deque<Token> tokenizer(const std::string& input) {
+	std::deque<Token> tokens;
 	auto              current = input.begin();
 	size_t            line = 0, column = 0;
 
@@ -31,7 +31,7 @@ std::queue<Token> tokenizer(const std::string& input) {
 	};
 
 	auto add_token = [&](TokenType type, const std::string& str) {
-		tokens.emplace(type, str, line, column);
+		tokens.push_back({type, str, line, column});
 	};
 
 	auto number = [&]() -> Token {
@@ -50,7 +50,7 @@ std::queue<Token> tokenizer(const std::string& input) {
 	};
 
 	// Whitelist all accepted identifiers
-	std::set<char> acceptedIdentifiers = {'?', '+', '-', '*', '/'};
+	std::set<char> acceptedIdentifiers = {'?', '+', '-', '*', '/', '=', '<'};
 	auto           is_identifier       = [&](char c) -> bool {
         return (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') ||
                acceptedIdentifiers.find(c) != acceptedIdentifiers.end();
@@ -66,9 +66,9 @@ std::queue<Token> tokenizer(const std::string& input) {
 	while(!is_end()) {
 		/** Tokenize multi character tokens **/
 		if(isdigit(*current))
-			tokens.push(number());
+			tokens.push_back(number());
 		if(is_identifier(*current))
-			tokens.push(identifier());
+			tokens.push_back(identifier());
 
 		// Tokenize all single character tokens
 		switch(*current) {

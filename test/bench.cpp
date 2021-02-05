@@ -31,15 +31,15 @@ class Tokenizer {
 	};
 
   public:
-	std::queue<Token> tokenizer(const std::string& input) {
-		std::queue<Token> tokens;
+	std::deque<Token> tokenizer(const std::string& input) {
+		std::deque<Token> tokens;
 		current = input.begin();
 
 		while(!is_end()) {
 			if(isdigit(*current))
-				tokens.push(number());
+				tokens.push_front(number());
 			if(isalpha(*current))
-				tokens.push(identifier());
+				tokens.push_front(identifier());
 
 			switch(*current) {
 			case ' ':
@@ -49,10 +49,10 @@ class Tokenizer {
 				column = 0;
 				break;
 			case '(':
-				tokens.push(Token{TokenType::LEFT_PAREN, "(", line, column});
+				tokens.push_front(Token{TokenType::LEFT_PAREN, "(", line, column});
 				break;
 			case ')':
-				tokens.push(Token{TokenType::RIGHT_PAREN, ")", line, column});
+				tokens.push_front(Token{TokenType::RIGHT_PAREN, ")", line, column});
 				break;
 			default:
 				break;

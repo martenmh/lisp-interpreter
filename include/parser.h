@@ -6,14 +6,14 @@
 
 #include <queue>
 
-Atom expression(std::queue<Token>& tokens);
+Atom expression(std::deque<Token>& tokens);
 
 /**
  * Parse a list
  * @param tokens incoming tokens from expression()
  * @return an atom containing a list
  */
-Atom list(std::queue<Token>& tokens) {
+Atom list(std::deque<Token>& tokens) {
 	Atom result;
 	Atom p;
 	// expectation assertion
@@ -23,7 +23,7 @@ Atom list(std::queue<Token>& tokens) {
 	};
 
 	expect(TokenType::LEFT_PAREN);
-	tokens.pop();
+	tokens.pop_front();
 
 	if(tokens.back().type != TokenType::RIGHT_PAREN) {
 		expect(TokenType::RIGHT_PAREN);
@@ -31,11 +31,11 @@ Atom list(std::queue<Token>& tokens) {
 	while(!tokens.empty()) {
 		Atom item;
 		if(tokens.front().type == TokenType::RIGHT_PAREN) {
-			tokens.pop();
+			tokens.pop_front();
 			break;
 		}
 		if(tokens.front().type == TokenType::DOT) {
-			tokens.pop();
+			tokens.pop_front();
 			// improper list
 			if(p.isNil())
 				throw SyntaxError(tokens.front(), "Improper list");
@@ -43,7 +43,7 @@ Atom list(std::queue<Token>& tokens) {
 			item    = expression(tokens);
 			p.cdr() = item;
 			expect(TokenType::RIGHT_PAREN);
-			tokens.pop();
+			tokens.pop_front();
 			break;
 		}
 		item = expression(tokens);
@@ -63,7 +63,7 @@ Atom list(std::queue<Token>& tokens) {
  * @param tokens incoming tokens from expression()
  * @return an atom containing simple data
  */
-Atom simple(std::queue<Token>& tokens) {
+Atom simple(std::deque<Token>& tokens) {
 	Atom   atom;
 	Token& token = tokens.front();
 	switch(token.type) {
@@ -94,7 +94,7 @@ Atom simple(std::queue<Token>& tokens) {
 	case TokenType::STRING:
 		break;
 	}
-	tokens.pop(); // ?
+	tokens.pop_front(); // ?
 	return atom;
 }
 
@@ -104,7 +104,7 @@ Atom simple(std::queue<Token>& tokens) {
  * @param tokens incoming tokens from the tokenizer
  * @return an atom containing an expression
  */
-Atom expression(std::queue<Token>& tokens) {
+Atom expression(std::deque<Token>& tokens) {
 
 	Token token = tokens.front();
 	if(token.type == TokenType::LEFT_PAREN) {
